@@ -931,6 +931,17 @@ require('lazy').setup({
     },
   },
 
+  {
+    'stevearc/oil.nvim',
+    opts = {},
+    dependencies = {
+      { 'echasnovski/mini.icons', opts = {} },
+    },
+    keys = {
+      { '<leader>fm', '<cmd>Oil<cr>', desc = 'Oil' },
+    },
+  },
+
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
@@ -1000,6 +1011,11 @@ require('lazy').setup({
     },
   },
 })
+
+-- Keymap for closing (deleting) a buffer
+vim.keymap.set('n', '<leader>bq', function()
+  vim.cmd 'bd'
+end)
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
