@@ -219,14 +219,19 @@ require('lazy').setup({
 
       -- Document existing key chains
       spec = {
-        { '<leader>c', group = '[C]ode', mode = { 'n', 'x' } },
+        { '<leader>b', group = '[B]uffer' },
         { '<leader>d', group = '[D]ocument' },
+        { '<leader>c', group = '[C]ode', mode = { 'n', 'x' } },
         { '<leader>r', group = '[R]ename' },
         { '<leader>s', group = '[S]earch' },
         { '<leader>w', group = '[W]orkspace' },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>g', group = '[G]it', mode = { 'n', 'v' } },
         { '<leader>f', group = '[F]ind/[F]ile', mode = { 'n' } },
+
+        { '<leader>n', group = '[N]eorg', mode = { 'n' } },
+        { '<leader>nj', group = '[N]eorg [J]ournal', mode = { 'n' } },
+        { '<leader>nn', group = '[N]eorg [N]otes', mode = { 'n' } },
       },
     },
   },
@@ -340,12 +345,19 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>fc', function()
         builtin.find_files { cwd = vim.fn.stdpath 'config' }
       end, { desc = '[F]ind Neovim [C]onfiguration files' })
-
-      -- Shortcut for searching your notes
-      vim.keymap.set('n', '<leader>nf', function()
-        builtin.find_files { cwd = 'C:\\dev\\personal\\notes\\' }
-      end, { desc = '[N]otes: [F]ind' })
     end,
+  },
+
+  {
+    'nvim-telescope/telescope.nvim',
+    tag = '0.1.5',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'jonarrien/telescope-cmdline.nvim',
+    },
+    keys = {
+      { ';', '<cmd>Telescope cmdline<cr>', desc = 'Cmdline' },
+    },
   },
 
   {
