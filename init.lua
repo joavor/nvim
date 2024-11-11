@@ -249,6 +249,7 @@ require('lazy').setup({
     branch = '0.1.x',
     dependencies = {
       'nvim-lua/plenary.nvim',
+      'jonarrien/telescope-cmdline.nvim',
       { -- If encountering errors, see telescope-fzf-native README for installation instructions
         'nvim-telescope/telescope-fzf-native.nvim',
 
@@ -292,13 +293,17 @@ require('lazy').setup({
       require('telescope').setup {
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
-        --
-        -- defaults = {
-        --   mappings = {
-        --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-        --   },
-        -- },
+
+        defaults = {
+          file_ignore_patterns = {
+            'obj/',
+            'bin/',
+            'node_modules/',
+          },
+        },
+
         -- pickers = {}
+
         extensions = {
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
@@ -321,10 +326,15 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>fd', builtin.diagnostics, { desc = '[F]ind [D]iagnostics' })
       vim.keymap.set('n', '<leader>fr', builtin.resume, { desc = '[F]ind [R]esume' })
       vim.keymap.set('n', '<leader>f.', builtin.oldfiles, { desc = '[F]ind Recent Files ("." for repeat)' })
+      vim.keymap.set('n', '<leader>fa', function()
+        builtin.find_files { hidden = true }
+      end, { desc = '[F]ind [A]ll files' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
 
+      vim.keymap.set('n', ';', '<cmd>Telescope cmdline<cr>', { desc = '[;] Telescope command line' })
+
       -- Slightly advanced example of overriding default behavior and theme
-      vim.keymap.set('n', '<leader>/', function()
+      vim.keymap.set('n', '<leader>ft', function()
         -- You can pass additional configuration to Telescope to change the theme, layout, etc.
         builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
           winblend = 10,
@@ -604,6 +614,19 @@ require('lazy').setup({
     end,
   },
 
+  {
+    'iabdelkareem/csharp.nvim',
+    dependencies = {
+      'williamboman/mason.nvim', -- Required, automatically installs omnisharp
+      'mfussenegger/nvim-dap',
+      'Tastyep/structlog.nvim', -- Optional, but highly recommended for debugging
+    },
+    config = function()
+      require('mason').setup() -- Mason setup must run before csharp, only if you want to use omnisharp
+      require('csharp').setup()
+    end,
+  },
+
   { -- Autoformat
     'stevearc/conform.nvim',
     event = { 'BufWritePre' },
@@ -784,9 +807,13 @@ require('lazy').setup({
       --  - ci'  - [C]hange [I]nside [']quote
       require('mini.ai').setup { n_lines = 500 }
 
+      require('mini.cursorword').setup()
+
+      require('mini.pairs').setup()
+
       -- Add/delete/replace surroundings (brackets, quotes, etc.)
       --
-      -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
+      -- - saiw) - [S]urrouna [A]dd [I]nner [W]ord [)]Paren
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
@@ -835,6 +862,14 @@ require('lazy').setup({
     --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
     --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+  },
+
+  {
+    'akinsho/toggleterm.nvim',
+    version = '*',
+    config = function()
+      require('toggleterm').setup()
+    end,
   },
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
@@ -899,6 +934,37 @@ end, { desc = 'Save buffer' })
 vim.keymap.set('n', '<leader>u', function()
   vim.cmd 'UndotreeToggle'
 end, { desc = 'Toggle undotree' })
+
+vim.keymap.set('n', '<leader>h', function()
+  require('blockheader').prompt_and_write()
+end, { desc = '[H]eader' })
+
+vim.keymap.set('n', '<leader>?', function()
+  print(vim.lsp.get_clients())
+end, { desc = '[H]eader' })
+
+vim.keymap.set('n', '<leader>.b', function()
+  vim.cmd ':terminal dotnet build'
+end, { desc = '[.]NET [B]uild' })
+
+vim.keymap.set('n', '<leader>.pr', function()
+  vim.cmd ':terminal dotnet restore'
+end, { desc = '[.]NET [P]ackage [R]estore' })
+
+vim.keymap.set('n', '<leader>.pa', function()
+  local project = './Icore.Hours.csproj'
+  local package = 'package'
+  local command = string.format(':terminal dotnet add %s package ', project, package)
+  vim.cmd(command)
+end, { desc = '[.]NET [P]ackage [A]dd' })
+
+vim.keymap.set('n', '<leader>.r', function()
+  require('csharp').run_project()
+end, { desc = '[.]NET [R]un' })
+
+vim.keymap.set('n', '<leader>.d', function()
+  require('csharp').debug_project()
+end, { desc = '[.]NET [D]edug' })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
